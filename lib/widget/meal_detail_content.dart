@@ -227,7 +227,7 @@ class MealDetailContent extends StatelessWidget {
   List<Map<String, String>> _getIngredients() {
     final ingredients = <Map<String, String>>[];
 
-    // Combine ingredients and measurements
+
     for (int i = 0; i < meal.ingredients.length; i++) {
       final ingredient = meal.ingredients[i];
       final measurement = i < meal.measurements.length
