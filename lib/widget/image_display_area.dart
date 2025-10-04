@@ -1,31 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 import '../controller/image_classification_provider.dart';
+import 'image_source_picker.dart';
 
 class ImageDisplayArea extends StatelessWidget {
   const ImageDisplayArea({super.key});
 
-  Future<void> _pickImageFromGallery(BuildContext context) async {
-    final ImagePicker imagePicker = ImagePicker();
-    try {
-      final pickedFile = await imagePicker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-      );
-
-      if (pickedFile != null && context.mounted) {
-        final imageFile = File(pickedFile.path);
+  void _showImagePicker(BuildContext context) {
+    ImageSourcePicker.show(
+      context,
+      onImageSelected: (File imageFile) {
         context.read<ImageClassificationProvider>().classifyImage(imageFile);
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
-      }
-    }
+      },
+    );
   }
 
   @override
@@ -33,7 +21,7 @@ class ImageDisplayArea extends StatelessWidget {
     return Consumer<ImageClassificationProvider>(
       builder: (context, provider, child) {
         return GestureDetector(
-          onTap: () => _pickImageFromGallery(context),
+          onTap: () => _showImagePicker(context),
           child: Container(
             height: 240,
             decoration: BoxDecoration(

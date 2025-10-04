@@ -1,11 +1,12 @@
+import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controller/image_classification_provider.dart';
+import 'image_source_picker.dart';
 
 class ActionButtonsRow extends StatelessWidget {
-  final VoidCallback onCameraPressed;
-
-  const ActionButtonsRow({super.key, required this.onCameraPressed});
+  const ActionButtonsRow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +15,11 @@ class ActionButtonsRow extends StatelessWidget {
         return Row(
           children: [
             Expanded(
-              child: _CameraButton(
-                onPressed: provider.isLoading ? null : onCameraPressed,
+              child: _ImagePickerButton(
+                isEnabled: true,
+                onImageSelected: (File imageFile) {
+                  provider.classifyImage(imageFile);
+                },
               ),
             ),
 
@@ -38,10 +42,14 @@ class ActionButtonsRow extends StatelessWidget {
   }
 }
 
-class _CameraButton extends StatelessWidget {
-  final VoidCallback? onPressed;
+class _ImagePickerButton extends StatelessWidget {
+  final bool isEnabled;
+  final Function(File) onImageSelected;
 
-  const _CameraButton({required this.onPressed});
+  const _ImagePickerButton({
+    required this.isEnabled,
+    required this.onImageSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,41 +57,48 @@ class _CameraButton extends StatelessWidget {
       height: 56,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          colors: [Colors.orange.shade600, Colors.deepOrange.shade500],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.shade300,
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        gradient: isEnabled
+            ? LinearGradient(
+                colors: [Colors.orange.shade400, Colors.orange.shade600],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: isEnabled ? null : Colors.grey.shade300,
       ),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: const Icon(
-          Icons.camera_alt_rounded,
-          size: 20,
-          color: Colors.white,
-        ),
-        label: const Text(
-          'Camera',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isEnabled ? () => _showImagePicker(context) : null,
+          borderRadius: BorderRadius.circular(28),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add_photo_alternate,
+                  color: isEnabled ? Colors.white : Colors.grey.shade600,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Pick Image',
+                  style: TextStyle(
+                    color: isEnabled ? Colors.white : Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _showImagePicker(BuildContext context) {
+    log('DEBUG: Pick Image button clicked!');
+    ImageSourcePicker.show(context, onImageSelected: onImageSelected);
   }
 }
 
