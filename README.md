@@ -47,7 +47,8 @@ lib/
 
 - flutter
 - provider
-- camera
+- image_picker
+- image_cropper
 - tflite_flutter
 - http
 - image
