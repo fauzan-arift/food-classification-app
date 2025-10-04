@@ -16,7 +16,7 @@ Aplikasi mobile untuk mengidentifikasi makanan menggunakan kamera dan machine le
 - **State Management**: Provider
 - **ML Model**: TensorFlow Lite
 - **API**: TheMealDB
-- **Camera**: Camera plugin
+- **Camera**: Image Picker dan Image Cropper plugin
 
 ## Cara Install
 
